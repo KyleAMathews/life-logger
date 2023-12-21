@@ -1,6 +1,5 @@
 import { useEffect } from "react"
 import { Link, Outlet } from "react-router-dom"
-import "../App.css"
 import { Box, Avatar, Stack } from "degen"
 import { Text } from "../components/text"
 import { SignedIn, SignedOut, UserButton } from "@clerk/clerk-react"
@@ -34,7 +33,11 @@ export default function RootLayout() {
   }
 
   return (
-    <div className="App">
+    <Box
+      className="App"
+      padding="3"
+      style={{ maxWidth: `960px`, margin: `0 auto` }}
+    >
       <Box padding="4">
         <Stack space="6">
           <Stack direction="horizontal" justify="space-between">
@@ -62,6 +65,6 @@ export default function RootLayout() {
       <main>
         <Outlet />
       </main>
-    </div>
+    </Box>
   )
 }
