@@ -1,37 +1,22 @@
-import * as React from 'react'
-import * as Y from 'yjs'
-import { Link } from 'react-router-dom'
-import Editor from './editor'
-import { Text, DatePicker } from '../components'
-import { parseAbsolute } from '@internationalized/date'
-import { Box, Avatar, IconClose, IconChevronDown, Stack } from 'degen'
-import { Event } from '../models/event'
-import { EventType } from '../models/event-type'
+import * as React from "react"
+import { Link } from "react-router-dom"
+import Editor from "./editor"
+import { Text, DatePicker } from "../components"
+import { parseAbsolute } from "@internationalized/date"
+import { Box, Avatar, IconClose, IconChevronDown, Stack } from "degen"
+import { useUser } from "@clerk/clerk-react"
+import { useUpdateEvent, useDeleteEvent } from "../daos/events"
 
-function EventComponent({
-  eventsMap,
-  typesMap,
-  provider,
-  event,
-  users,
-  showEventName = true,
-}): {
-  eventsMap: any
-  typesMap: any
-  provider: any
-  event: Event
-  users: any
-  showEventName: boolean
-} {
+function EventComponent({ event, typesMap, showEventName = true }) {
+  const { user } = useUser()
+  const updateEvent = useUpdateEvent(event.id)
+  const deleteEvent = useDeleteEvent(event.id)
   const [isOpen, setIsOpen] = React.useState(false)
   const startDate = parseAbsolute(
-    event.created_at,
-    Intl.DateTimeFormat().resolvedOptions().timeZone,
+    event.created_at.toJSON(),
+    Intl.DateTimeFormat().resolvedOptions().timeZone
   )
   const [newDate, setNewDate] = React.useState(startDate)
-  const user = users.get(event.creator)
-  const yjsEvent = eventsMap.get(event.id)
-  const type = typesMap.get(event.typeId) as EventType
 
   return (
     <Stack space="2">
@@ -45,7 +30,7 @@ function EventComponent({
         cursor="pointer"
       >
         <Stack direction="horizontal" space="2">
-          <Avatar address={user?.address} size="3" src={user?.avatar} />
+          <Avatar address={user?.id} size="3" src={user?.imageUrl} />
           <Text>
             {new Date(event.created_at).toLocaleTimeString(navigator.language, {
               hour: `2-digit`,
@@ -57,31 +42,28 @@ function EventComponent({
             <Text>
               <Link
                 // onClick={(e) => e.preventDefault()}
-                to={`/type/${event.typeId}`}
+                to={`/type/${event.type}`}
               >
-                {type.name}
+                {typesMap[event.type].name}
               </Link>
             </Text>
           )}
           {isOpen ? <IconClose size={3} /> : <IconChevronDown size={3} />}
         </Stack>
       </Box>
-      {isOpen &&
-        eventsMap.get(event.id).get(`body`) instanceof Y.XmlFragment && (
-          <Box maxWidth="180">
-            <Editor
-              provider={provider}
-              xmlType={eventsMap.get(event.id).get(`body`)}
-            />
-          </Box>
-        )}
       {isOpen && (
         <Stack direction="horizontal" space="2">
-          <DatePicker label="" value={newDate} onChange={setNewDate} />
+          <DatePicker
+            label="Event happened at"
+            value={newDate}
+            onChange={setNewDate}
+          />
           {startDate.toAbsoluteString() !== newDate.toAbsoluteString() && (
             <button
               onClick={() => {
-                yjsEvent.set(`created_at`, newDate.toAbsoluteString())
+                console.log(newDate.toDate())
+                console.log(`saving`)
+                updateEvent(newDate.toDate())
               }}
             >
               save
@@ -94,10 +76,10 @@ function EventComponent({
           width="180"
           onClick={() => {
             const result = confirm(
-              `Are you sure you want to delete this event? It'll be gone forever.`,
+              `Are you sure you want to delete this event? It'll be gone forever.`
             )
             if (result) {
-              eventsMap.delete(event.id)
+              deleteEvent()
             }
           }}
         >

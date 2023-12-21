@@ -9,7 +9,7 @@ export default async function initElectric(token: string) {
     auth: {
       token,
     },
-    debug: true, //DEBUG_MODE,
+    debug: false,
     url: import.meta.env.VITE_ELECTRIC_URL,
   }
 

@@ -24,7 +24,7 @@ function Settings() {
     <Stack>
       <Heading level="2">Settings</Heading>
       <Stack space="12">
-        <Stack space="3">
+        <Stack space="5">
           <h3 className={fontStyles.SpaceMono_LARGE}>Event Types</h3>
           <Box
             className={fontStyles.SpaceMono_MED}
@@ -41,9 +41,11 @@ function Settings() {
             })}
           </Box>
           <Box width="64">
-            <h3 className={fontStyles.SpaceMono_LARGE}>
-              Create new event type
-            </h3>
+            <Box marginBottom="2">
+              <h3 className={fontStyles.SpaceMono_LARGE}>
+                Create new event type
+              </h3>
+            </Box>
             <form
               method="post"
               onSubmit={async (e) => {

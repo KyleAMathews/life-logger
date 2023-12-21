@@ -12,6 +12,7 @@ import { ClerkProvider } from "@clerk/clerk-react"
 
 // Layouts
 import RootLayout from "./layouts/root-layout"
+import AuthedLayout from "./layouts/authed-layout"
 
 // Routes
 import Root from "./routes/root"
@@ -26,16 +27,21 @@ const router = createBrowserRouter([
     errorElement: <ErrorPage />,
     children: [
       {
-        index: true,
-        element: <Index />,
-      },
-      {
         path: `/sign-in`,
         element: <SignIn />,
       },
       {
-        path: `/settings`,
-        element: <Settings />,
+        element: <AuthedLayout />,
+        children: [
+          {
+            index: true,
+            element: <Index />,
+          },
+          {
+            path: `/settings`,
+            element: <Settings />,
+          },
+        ],
       },
     ],
   },
