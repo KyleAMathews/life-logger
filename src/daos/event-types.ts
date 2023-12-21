@@ -1,20 +1,20 @@
 import { useLiveQuery } from "electric-sql/react"
+import { genUUID } from "electric-sql/util"
 import { useElectric } from "../context"
+import { useUser } from "@clerk/clerk-react"
 
 export function useCreateEventType() {
   const { db } = useElectric()!
+  const { user } = useUser()
   return async (name) => {
-    if (id) {
-      // Check if the video exists.
-      const videoExists = await db.youtube_videos.findUnique({ where: { id } })
-      if (videoExists === null) {
-        await trpc.createVideo.mutate({ id })
-      }
-    } else {
-      throw new Error(`Not a valid YouTube URL`)
+    const id = genUUID()
+    const eventType = {
+      id,
+      name,
+      user_id: user.id,
     }
 
-    return id
+    return db.event_types.create({ data: eventType })
   }
 }
 

@@ -22,9 +22,6 @@ export type Event_types = {
    */
   id: string
   name: string
-  /**
-   * @zod.string.uuid()
-   */
   user_id: string
 }
 
@@ -42,9 +39,6 @@ export type Events = {
    */
   type: string
   created_at: Date | null
-  /**
-   * @zod.string.uuid()
-   */
   user_id: string
 }
 
@@ -53,9 +47,6 @@ export type Events = {
  * 
  */
 export type Users = {
-  /**
-   * @zod.string.uuid()
-   */
   id: string
   name: string
   avatar_url: string | null
@@ -4044,7 +4035,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     NOT?: Enumerable<Event_typesWhereInput>
     id?: UuidFilter | string
     name?: StringFilter | string
-    user_id?: UuidFilter | string
+    user_id?: StringFilter | string
     users?: XOR<UsersRelationFilter, UsersWhereInput>
     events?: EventsListRelationFilter
   }
@@ -4076,7 +4067,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     NOT?: Enumerable<Event_typesScalarWhereWithAggregatesInput>
     id?: UuidWithAggregatesFilter | string
     name?: StringWithAggregatesFilter | string
-    user_id?: UuidWithAggregatesFilter | string
+    user_id?: StringWithAggregatesFilter | string
   }
 
   export type EventsWhereInput = {
@@ -4086,7 +4077,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     id?: UuidFilter | string
     type?: UuidFilter | string
     created_at?: DateTimeNullableFilter | Date | string | null
-    user_id?: UuidFilter | string
+    user_id?: StringFilter | string
     event_types?: XOR<Event_typesRelationFilter, Event_typesWhereInput>
     users?: XOR<UsersRelationFilter, UsersWhereInput>
   }
@@ -4121,14 +4112,14 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     id?: UuidWithAggregatesFilter | string
     type?: UuidWithAggregatesFilter | string
     created_at?: DateTimeNullableWithAggregatesFilter | Date | string | null
-    user_id?: UuidWithAggregatesFilter | string
+    user_id?: StringWithAggregatesFilter | string
   }
 
   export type UsersWhereInput = {
     AND?: Enumerable<UsersWhereInput>
     OR?: Enumerable<UsersWhereInput>
     NOT?: Enumerable<UsersWhereInput>
-    id?: UuidFilter | string
+    id?: StringFilter | string
     name?: StringFilter | string
     avatar_url?: StringNullableFilter | string | null
     event_types?: Event_typesListRelationFilter
@@ -4160,7 +4151,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     AND?: Enumerable<UsersScalarWhereWithAggregatesInput>
     OR?: Enumerable<UsersScalarWhereWithAggregatesInput>
     NOT?: Enumerable<UsersScalarWhereWithAggregatesInput>
-    id?: UuidWithAggregatesFilter | string
+    id?: StringWithAggregatesFilter | string
     name?: StringWithAggregatesFilter | string
     avatar_url?: StringNullableWithAggregatesFilter | string | null
   }
@@ -4909,7 +4900,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     id?: UuidFilter | string
     type?: UuidFilter | string
     created_at?: DateTimeNullableFilter | Date | string | null
-    user_id?: UuidFilter | string
+    user_id?: StringFilter | string
   }
 
   export type Event_typesCreateWithoutEventsInput = {
@@ -5050,7 +5041,7 @@ export type InputJsonValue = null | string | number | boolean | InputJsonObject 
     NOT?: Enumerable<Event_typesScalarWhereInput>
     id?: UuidFilter | string
     name?: StringFilter | string
-    user_id?: UuidFilter | string
+    user_id?: StringFilter | string
   }
 
   export type EventsUpsertWithWhereUniqueWithoutUsersInput = {

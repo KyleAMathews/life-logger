@@ -1,10 +1,38 @@
+import { useEffect } from "react"
 import { Link, Outlet } from "react-router-dom"
 import "../App.css"
 import { Box, Avatar, Stack } from "degen"
 import { Text } from "../components/text"
 import { SignedIn, SignedOut, UserButton } from "@clerk/clerk-react"
+import { useElectric } from "../context"
+import { useUser } from "@clerk/clerk-react"
 
 export default function RootLayout() {
+  const { user } = useUser()
+  const electric = useElectric()!
+
+  useEffect(() => {
+    if (electric?.db && user && user.id) {
+      electric.db.users.upsert({
+        create: {
+          id: user.id,
+          name: user.firstName,
+          avatar_url: user.imageUrl,
+        },
+        update: {
+          id: user.id,
+          name: user.firstName,
+          avatar_url: user.imageUrl,
+        },
+        where: { id: user.id },
+      })
+    }
+  }, [electric, user])
+
+  if (!electric) {
+    return null
+  }
+
   return (
     <div className="App">
       <Box padding="4">
