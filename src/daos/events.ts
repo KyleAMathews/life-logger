@@ -51,3 +51,16 @@ export function useEvents() {
 
   return results
 }
+
+export function useEventsByType(typeId: string) {
+  const { db } = useElectric()!
+
+  const { results } = useLiveQuery(
+    db.events.liveMany({
+      where: { type: typeId },
+      orderBy: { created_at: `desc` },
+    })
+  )
+
+  return results
+}

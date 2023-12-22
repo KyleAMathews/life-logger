@@ -19,6 +19,7 @@ import Root from "./routes/root"
 import Index from "./routes/index"
 import Settings from "./routes/settings"
 import SignIn from "./routes/sign-in"
+import Type from "./routes/type"
 
 const router = createBrowserRouter([
   {
@@ -40,6 +41,10 @@ const router = createBrowserRouter([
           {
             path: `/settings`,
             element: <Settings />,
+          },
+          {
+            path: `/type/:id`,
+            element: <Type />,
           },
         ],
       },

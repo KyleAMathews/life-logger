@@ -1,6 +1,6 @@
 import { useUser, useAuth } from "@clerk/clerk-react"
 import { useEvents, useCreateEvent } from "../daos/events"
-import { Box, Avatar, Stack } from "degen"
+import { Box, Heading, Stack } from "degen"
 import EventsByDay from "../components/events-by-day"
 import { fontStyles } from "../styles/typography.css"
 import { useEventTypes } from "../daos/event-types"
@@ -24,7 +24,7 @@ export default function () {
 
   return (
     <div className="App">
-      <Box padding="4">
+      <Box>
         <Stack space="6">
           <div
             style={{
@@ -49,6 +49,7 @@ export default function () {
                   }}
                 >
                   <Stack space="2">
+                    <Heading level="2">All Events</Heading>
                     <h3 className={fontStyles.SpaceMono_MED}>Create event</h3>
                     <select
                       name="typeId"

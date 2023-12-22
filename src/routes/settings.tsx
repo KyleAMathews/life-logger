@@ -1,16 +1,18 @@
 import * as React from "react"
 import { Link } from "react-router-dom"
-// import { useYjs, useSubscribeYjs, useAuth } from 'situated'
-import { nanoid } from "nanoid"
 import { fontStyles } from "../styles/typography.css"
 import { Heading, Box, Stack } from "degen"
-import { useEventTypes, useCreateEventType } from "../daos/event-types"
-import { useUsers, useCreateUser } from "../daos/users"
+import { timeSince } from "../time-since"
+import {
+  useEventTypesWithEventCount,
+  useCreateEventType,
+} from "../daos/event-types"
+import { useUsers } from "../daos/users"
 import { useUser } from "@clerk/clerk-react"
 
 function Settings() {
   const { user } = useUser()
-  const eventTypes = useEventTypes()
+  const eventTypes = useEventTypesWithEventCount()
   const createEventType = useCreateEventType()
   const users = useUsers()
 
@@ -18,7 +20,6 @@ function Settings() {
   if (!eventTypes || !users) {
     return null
   }
-  const accountInfo = {}
 
   return (
     <Stack>
@@ -26,17 +27,22 @@ function Settings() {
       <Stack space="12">
         <Stack space="5">
           <h3 className={fontStyles.SpaceMono_LARGE}>Event Types</h3>
-          <Box
-            className={fontStyles.SpaceMono_MED}
-            as="ul"
-            paddingLeft="4"
-            style={{ listStyle: `disc` }}
-          >
-            {eventTypes.map(({ id, name }) => {
+          <Box className={fontStyles.SpaceMono_MED} as="table">
+            <tr>
+              <th scope="col">Name</th>
+              <th scope="col">Count</th>
+              <th scope="col">Latest event</th>
+            </tr>
+            {eventTypes.map(({ id, name, event_count, latest_event_at }) => {
+              console.log({ id, name })
               return (
-                <li key={name}>
-                  <Link to={`/type/${id}`}>{name}</Link>
-                </li>
+                <tr key={id}>
+                  <th>
+                    <Link to={`/type/${id}`}>{name}</Link>
+                  </th>
+                  <th>{event_count}</th>
+                  <th>{timeSince(latest_event_at)}</th>
+                </tr>
               )
             })}
           </Box>
@@ -50,10 +56,12 @@ function Settings() {
               method="post"
               onSubmit={async (e) => {
                 e.preventDefault()
-                const { name } = Object.fromEntries(
-                  new FormData(e.currentTarget)
-                )
+                const form = e.currentTarget
+                const { name } = Object.fromEntries(new FormData(form))
                 const newType = await createEventType(name)
+                if (newType) {
+                  form.reset()
+                }
                 console.log({ newType })
               }}
             >

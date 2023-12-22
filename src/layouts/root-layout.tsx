@@ -38,7 +38,7 @@ export default function RootLayout() {
       padding="3"
       style={{ maxWidth: `960px`, margin: `0 auto` }}
     >
-      <Box padding="4">
+      <Box>
         <Stack space="6">
           <Stack direction="horizontal" justify="space-between">
             <Stack direction="horizontal" align="center">
@@ -50,7 +50,7 @@ export default function RootLayout() {
             </Stack>
             <Stack direction="horizontal" align="center">
               <Text>
-                <Link to="/settings">Events Settings</Link>
+                <Link to="/settings">App Settings</Link>
               </Text>
               <SignedIn>
                 <UserButton afterSignOutUrl="/sign-in" />
