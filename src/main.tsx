@@ -16,7 +16,6 @@ import RootLayout from "./layouts/root-layout"
 import AuthedLayout from "./layouts/authed-layout"
 
 // Routes
-import Root from "./routes/root"
 import Index from "./routes/index"
 import Settings from "./routes/settings"
 import SignIn from "./routes/sign-in"
