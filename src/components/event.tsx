@@ -4,11 +4,15 @@ import Editor from "./editor"
 import { Text, DatePicker } from "../components"
 import { parseAbsolute } from "@internationalized/date"
 import { Box, Avatar, IconClose, IconChevronDown, Stack } from "degen"
-import { useUser } from "@clerk/clerk-react"
+import { useUsers } from "../daos/users"
 import { useUpdateEvent, useDeleteEvent } from "../daos/events"
 
 function EventComponent({ event, typesMap, showEventName = true }) {
-  const { user } = useUser()
+  const users =
+    useUsers()?.reduce((acc, obj) => {
+      acc[obj.id] = obj
+      return acc
+    }, {}) || {}
   const updateEvent = useUpdateEvent(event.id)
   const deleteEvent = useDeleteEvent(event.id)
   const [isOpen, setIsOpen] = React.useState(false)
@@ -17,6 +21,7 @@ function EventComponent({ event, typesMap, showEventName = true }) {
     Intl.DateTimeFormat().resolvedOptions().timeZone
   )
   const [newDate, setNewDate] = React.useState(startDate)
+  const user = users[event.user_id]
 
   return (
     <Stack space="2">
@@ -30,7 +35,7 @@ function EventComponent({ event, typesMap, showEventName = true }) {
         cursor="pointer"
       >
         <Stack direction="horizontal" space="2">
-          <Avatar address={user?.id} size="3" src={user?.imageUrl} />
+          <Avatar address={user?.id} size="3" src={user?.avatar_url} />
           <Text>
             {new Date(event.created_at).toLocaleTimeString(navigator.language, {
               hour: `2-digit`,
