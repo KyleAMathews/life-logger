@@ -6,7 +6,7 @@ import { vanillaExtractPlugin } from "@vanilla-extract/vite-plugin"
 export default defineConfig({
   plugins: [react(), vanillaExtractPlugin()],
   define: {
-    VITE_ELECTRIC_URL: JSON.stringify(process.env.VITE_ELECTRIC_URL),
+    ELECTRIC_URL: JSON.stringify(process.env.ELECTRIC_URL),
   },
   assetsInclude: [`**/*.wasm`],
 })

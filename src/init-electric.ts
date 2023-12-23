@@ -30,14 +30,14 @@ function createElectricRef<T>() {
 
 export const electricRef = createElectricRef<Electric>()
 
-console.log(`VITE_ELECTRIC_URL`, import.meta.env.VITE_ELECTRIC_URL)
+console.log(`ELECTRIC_URL`, import.meta.env.ELECTRIC_URL)
 export default async function initElectric(token: string) {
   const config = {
     auth: {
       token,
     },
     debug: false,
-    url: import.meta.env.VITE_ELECTRIC_URL,
+    url: import.meta.env.ELECTRIC_URL,
   }
 
   const { tabId } = uniqueTabId()
