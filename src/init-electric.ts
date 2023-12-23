@@ -30,14 +30,20 @@ function createElectricRef<T>() {
 
 export const electricRef = createElectricRef<Electric>()
 
-console.log(`ELECTRIC_URL`, import.meta.env.ELECTRIC_URL)
+declare const ELECTRIC_URL: string
+const electricUrl =
+  typeof ELECTRIC_URL === `undefined`
+    ? `ws://localhost:5133`
+    : `wss://${ELECTRIC_URL}`
+
+console.log({ electricUrl })
 export default async function initElectric(token: string) {
   const config = {
     auth: {
       token,
     },
     debug: false,
-    url: import.meta.env.ELECTRIC_URL,
+    url: electricUrl,
   }
 
   const { tabId } = uniqueTabId()
