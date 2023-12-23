@@ -1,26 +1,19 @@
-import { useUser, useAuth } from "@clerk/clerk-react"
-import { useEvents, useCreateEvent } from "../daos/events"
 import { Box, Heading, Stack } from "degen"
 import EventsByDay from "../components/events-by-day"
 import { fontStyles } from "../styles/typography.css"
-import { useEventTypes } from "../daos/event-types"
+import { useElectricData } from "../electric-routes-lib"
+import { eventTypes } from "../daos/event-types"
+import { events, useCreateEvent } from "../daos/events"
+import { Electric } from "../generated/client"
 
-export default function () {
-  const { isSignedIn, user, isLoaded } = useUser()
-  const { getToken } = useAuth()
-  console.log({ isSignedIn, user, isLoaded, token: getToken() })
+function Index() {
   const createEvent = useCreateEvent()
-  const events = useEvents()
-  const eventTypes = useEventTypes()!
+  const { events, eventTypes } = useElectricData()
 
-  if (!events || !eventTypes) {
-    return null
-  }
   const typesMap = eventTypes.reduce((acc, obj) => {
     acc[obj.id] = obj
     return acc
   }, {})
-  console.log({ events, eventTypes, typesMap })
 
   return (
     <div className="App">
@@ -79,3 +72,13 @@ export default function () {
     </div>
   )
 }
+
+const queries = ({ db }: { db: Electric[`db`] }) => {
+  return {
+    eventTypes: db.event_types.liveMany({ orderBy: { name: `asc` } }),
+    events: events(db),
+  }
+}
+Index.queries = queries
+
+export default Index

@@ -14,12 +14,11 @@ export function ElectricalProvider({ children }) {
     // declare the data fetching function
     const setupElectric = async () => {
       const token = await getToken()
-      console.log({ token })
       if (token) {
         setTimeout(async () => {
           const electric = await initElectric(token)
           setDb(electric)
-        }, 500)
+        }, 1000)
       }
     }
 
@@ -28,8 +27,6 @@ export function ElectricalProvider({ children }) {
       // make sure to catch any error
       .catch(console.error)
   }, [getToken, isSignedIn])
-
-  console.log({ isSignedIn, isLoaded, token: getToken() })
 
   return <ElectricProvider db={db}>{children}</ElectricProvider>
 }

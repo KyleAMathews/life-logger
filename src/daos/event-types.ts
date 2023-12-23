@@ -33,12 +33,12 @@ export function useEventTypes() {
   return results
 }
 
-export function useEventTypesWithEventCount() {
-  const { db } = useElectric()!
+export const eventTypes = (db) =>
+  db.event_types.liveMany({ orderBy: { name: `asc` } })
 
-  const { results } = useLiveQuery(
-    db.liveRaw({
-      sql: `
+export const eventTypesWithEventCount = (db) =>
+  db.liveRaw({
+    sql: `
 SELECT 
     event_types.id,
     event_types.name,
@@ -53,11 +53,18 @@ GROUP BY
 ORDER BY 
     event_types.name;
     `,
-    })
-  )
+  })
+
+export function useEventTypesWithEventCount() {
+  const { db } = useElectric()!
+
+  const { results } = useLiveQuery(eventTypesWithEventCount(db))
 
   return results
 }
+
+export const eventTypeById = ({ db, typeId }) =>
+  db.event_types.liveUnique({ where: { id: typeId } })
 
 export function useEventTypeById(id) {
   const { db } = useElectric()!

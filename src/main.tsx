@@ -5,10 +5,11 @@ import "degen/styles"
 import "./App.css"
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
 import ErrorPage from "./error-page"
-import initElectric from "./init-electric"
 import { ElectricalProvider } from "./context"
 import "@fontsource/space-mono"
 import { ClerkProvider } from "@clerk/clerk-react"
+
+import { electricSqlLoader } from "./electric-routes-lib"
 
 // Layouts
 import RootLayout from "./layouts/root-layout"
@@ -20,6 +21,22 @@ import Index from "./routes/index"
 import Settings from "./routes/settings"
 import SignIn from "./routes/sign-in"
 import Type from "./routes/type"
+
+// Until there's support for fine-grained shapes, all the routes use the same
+// shapes atm.
+const shapes = ({ db }) => [
+  db.event_types.sync({
+    include: {
+      users: true,
+    },
+  }),
+  db.events.sync({
+    include: {
+      users: true,
+      event_types: true,
+    },
+  }),
+]
 
 const router = createBrowserRouter([
   {
@@ -37,14 +54,41 @@ const router = createBrowserRouter([
           {
             index: true,
             element: <Index />,
+            loader: async (props) => {
+              await electricSqlLoader({
+                loaderProps: props,
+                shapes: ({ db }) => shapes({ db }),
+                queries: ({ db }) => Index.queries({ db }),
+              })
+
+              return null
+            },
           },
           {
             path: `/settings`,
             element: <Settings />,
+            loader: async (props) => {
+              await electricSqlLoader({
+                loaderProps: props,
+                shapes: ({ db }) => shapes({ db }),
+                queries: ({ db }) => Settings.queries({ db }),
+              })
+
+              return null
+            },
           },
           {
             path: `/type/:id`,
             element: <Type />,
+            loader: async (props) => {
+              await electricSqlLoader({
+                loaderProps: props,
+                shapes: ({ db }) => shapes({ db }),
+                queries: ({ db }) => Type.queries({ db, props }),
+              })
+
+              return null
+            },
           },
         ],
       },

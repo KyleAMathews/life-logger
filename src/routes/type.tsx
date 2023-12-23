@@ -2,13 +2,14 @@ import * as React from "react"
 import { useParams } from "react-router-dom"
 import { groupBy } from "lodash"
 import { fontStyles } from "../styles/typography.css"
-import { Heading, Stack } from "degen"
+import { Heading, Stack, Box } from "degen"
 import { Text } from "../components/text"
 import EventsByDay from "../components/events-by-day"
 import { timeSince } from "../time-since"
-import { useEventTypeById } from "../daos/event-types"
-import { useEventsByType } from "../daos/events"
+import { eventTypeById, useEventTypeById } from "../daos/event-types"
+import { eventsByType, useEventsByType } from "../daos/events"
 import { Line } from "@ant-design/charts"
+import { useElectricData } from "../electric-routes-lib"
 
 // Helper function to add days to a date
 const addDays = (date, days) => {
@@ -26,11 +27,9 @@ const fillDates = (data) => {
   // Convert the string dates to Date objects and sort them
   const dates = data
     .map((entry) => {
-      console.log({ entry, rejoined: entry.day.split(`/`).reverse().join(`-`) })
       return new Date(entry.day)
     })
     .sort((a, b) => a - b)
-  console.log({ data, dates })
 
   // Get the start and end dates
   let startDate = dates[0]
@@ -49,7 +48,6 @@ const fillDates = (data) => {
   ) {
     dateMap.set(date.toLocaleDateString(), 0)
   }
-  console.log({ startDate, endDate, dateMap })
 
   // Update the map with the existing data
   data.forEach(({ day, count }) => {
@@ -77,21 +75,19 @@ const Chart: React.FC = ({ data }) => {
     data,
     xField: `day`,
     yField: `count`,
+    height: 200,
   }
 
-  return <Line {...props} />
+  return (
+    <div style={{ height: 200 }}>
+      {` `}
+      <Line {...props} />
+    </div>
+  )
 }
 
 function Type() {
-  const { id } = useParams()
-  console.log({ id })
-  const type = useEventTypeById(id)
-  const events = useEventsByType(id)
-  console.log({ type, events })
-
-  if (!type || !events) {
-    return null
-  }
+  const { type, events } = useElectricData<typeof queries>()
 
   const eventsGroupedByDay = groupBy(Object.values(events), (event) =>
     event.created_at.toLocaleDateString()
@@ -103,7 +99,6 @@ function Type() {
     .sort((a, b) => (new Date(a) < new Date(b) ? 1 : -1))
 
   const filledData = fillDates(data)
-  console.log({ data, filledData })
 
   return (
     <Stack>
@@ -119,5 +114,13 @@ function Type() {
     </Stack>
   )
 }
+
+const queries = ({ db, props }) => {
+  return {
+    type: eventTypeById({ db, typeId: props.params.id }),
+    events: eventsByType({ db, typeId: props.params.id }),
+  }
+}
+Type.queries = queries
 
 export default Type

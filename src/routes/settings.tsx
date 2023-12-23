@@ -3,23 +3,15 @@ import { Link } from "react-router-dom"
 import { fontStyles } from "../styles/typography.css"
 import { Heading, Box, Stack } from "degen"
 import { timeSince } from "../time-since"
+import { useElectricData } from "../electric-routes-lib"
 import {
-  useEventTypesWithEventCount,
+  eventTypesWithEventCount,
   useCreateEventType,
 } from "../daos/event-types"
-import { useUsers } from "../daos/users"
-import { useUser } from "@clerk/clerk-react"
 
 function Settings() {
-  const { user } = useUser()
-  const eventTypes = useEventTypesWithEventCount()
+  const { eventTypes } = useElectricData()
   const createEventType = useCreateEventType()
-  const users = useUsers()
-
-  console.log({ eventTypes, users })
-  if (!eventTypes || !users) {
-    return null
-  }
 
   return (
     <Stack>
@@ -28,23 +20,26 @@ function Settings() {
         <Stack space="5">
           <h3 className={fontStyles.SpaceMono_LARGE}>Event Types</h3>
           <Box className={fontStyles.SpaceMono_MED} as="table">
-            <tr>
-              <th scope="col">Name</th>
-              <th scope="col">Count</th>
-              <th scope="col">Latest event</th>
-            </tr>
-            {eventTypes.map(({ id, name, event_count, latest_event_at }) => {
-              console.log({ id, name })
-              return (
-                <tr key={id}>
-                  <th>
-                    <Link to={`/type/${id}`}>{name}</Link>
-                  </th>
-                  <th>{event_count}</th>
-                  <th>{timeSince(latest_event_at)}</th>
-                </tr>
-              )
-            })}
+            <thead>
+              <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Count</th>
+                <th scope="col">Latest event</th>
+              </tr>
+            </thead>
+            <tbody>
+              {eventTypes.map(({ id, name, event_count, latest_event_at }) => {
+                return (
+                  <tr key={id}>
+                    <th>
+                      <Link to={`/type/${id}`}>{name}</Link>
+                    </th>
+                    <th>{event_count}</th>
+                    <th>{timeSince(latest_event_at)}</th>
+                  </tr>
+                )
+              })}
+            </tbody>
           </Box>
           <Box width="64">
             <Box marginBottom="2">
@@ -62,7 +57,6 @@ function Settings() {
                 if (newType) {
                   form.reset()
                 }
-                console.log({ newType })
               }}
             >
               <Stack space="1">
@@ -78,5 +72,12 @@ function Settings() {
     </Stack>
   )
 }
+
+const queries = ({ db }) => {
+  return {
+    eventTypes: eventTypesWithEventCount(db),
+  }
+}
+Settings.queries = queries
 
 export default Settings
