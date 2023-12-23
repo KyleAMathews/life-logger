@@ -12,7 +12,7 @@ export default function DashboardLayout() {
     }
   }, [userId, isLoaded, navigate])
 
-  if (!isLoaded) return null
+  if (!userId) return null
 
   return <Outlet />
 }

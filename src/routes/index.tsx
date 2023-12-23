@@ -5,6 +5,8 @@ import { useElectricData } from "../electric-routes-lib"
 import { eventTypes } from "../daos/event-types"
 import { events, useCreateEvent } from "../daos/events"
 import { Electric } from "../generated/client"
+import { useNavigate } from "react-router-dom"
+import { useAuth } from "@clerk/clerk-react"
 
 function Index() {
   const createEvent = useCreateEvent()

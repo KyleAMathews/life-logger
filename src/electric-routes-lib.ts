@@ -37,8 +37,13 @@ export async function electricSqlLoader({
     }
   })
 
-  if (!electricRef.value) {
+  if (typeof electricRef.value === `undefined`) {
     throw new Error(`electricRef.value is still undefined`)
+  }
+
+  // We're not signed in
+  if (electricRef.value === false) {
+    return
   }
 
   const syncPromises = await Promise.all(shapes({ db: electricRef.value.db }))

@@ -1,10 +1,10 @@
 import { useEffect } from "react"
 import { Link, Outlet } from "react-router-dom"
-import { Box, Avatar, Stack } from "degen"
+import { Box, Stack } from "degen"
 import { Text } from "../components/text"
 import { SignedIn, SignedOut, UserButton } from "@clerk/clerk-react"
 import { useElectric } from "../context"
-import { useUser } from "@clerk/clerk-react"
+import { useUser, useAuth } from "@clerk/clerk-react"
 
 export default function RootLayout() {
   const { user } = useUser()
@@ -27,10 +27,6 @@ export default function RootLayout() {
       })
     }
   }, [electric, user])
-
-  if (!electric) {
-    return null
-  }
 
   return (
     <Box
