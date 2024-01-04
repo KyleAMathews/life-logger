@@ -1,5 +1,6 @@
 import { FontMetrics } from "@capsizecss/core"
 import spaceMonoFontMetrics from "@capsizecss/metrics/spaceMono"
+import interFontMetrics from "@capsizecss/metrics/inter"
 import { createTextStyle } from "@capsizecss/vanilla-extract"
 import { style } from "@vanilla-extract/css"
 
@@ -27,6 +28,17 @@ export const fonts: Fonts = {
     format: `truetype-variations`,
     metrics: spaceMonoFontMetrics,
     name: `Space Mono`,
+    wghtRange: `100 900`,
+    wghts: {
+      "400": 400,
+      "700": 700,
+    },
+  },
+  inter: {
+    fallback: `sans-serif`,
+    format: `truetype-variations`,
+    metrics: interFontMetrics,
+    name: `Inter`,
     wghtRange: `100 900`,
     wghts: {
       "400": 400,
