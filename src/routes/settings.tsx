@@ -4,18 +4,20 @@ import { fontStyles } from "../styles/typography.css"
 import { Heading, Box, Stack } from "degen"
 import { timeSince } from "../time-since"
 import { useElectricData } from "../electric-routes-lib"
+import { useLocation } from "react-router-dom"
 import {
   eventTypesWithEventCount,
   useCreateEventType,
 } from "../daos/event-types"
 
 function Settings() {
-  const { eventTypes } = useElectricData()
+  const location = useLocation()
+  const { eventTypes } = useElectricData(location.pathname + location.search)
   const createEventType = useCreateEventType()
 
   return (
     <Stack>
-      <Heading level="2">Settings</Heading>
+      <h2 className={fontStyles.Inter_XLARGE}>Settings</h2>
       <Stack space="12">
         <Stack space="5">
           <h3 className={fontStyles.SpaceMono_LARGE}>Event Types</h3>

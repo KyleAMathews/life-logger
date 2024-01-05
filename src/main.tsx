@@ -24,17 +24,23 @@ import Type from "./routes/type"
 // Until there's support for fine-grained shapes, all the routes use the same
 // shapes atm.
 const shapes = ({ db }) => [
-  db.event_types.sync({
-    include: {
-      users: true,
-    },
-  }),
-  db.events.sync({
-    include: {
-      users: true,
-      event_types: true,
-    },
-  }),
+  {
+    shape: db.event_types.sync({
+      include: {
+        users: true,
+      },
+    }),
+    isReady: async ({ db }) => !!(await db.event_types.findFirst()),
+  },
+  {
+    shape: db.events.sync({
+      include: {
+        users: true,
+        event_types: true,
+      },
+    }),
+    isReady: async ({ db }) => !!(await db.events.findFirst()),
+  },
 ]
 
 const router = createBrowserRouter([
@@ -54,8 +60,10 @@ const router = createBrowserRouter([
             index: true,
             element: <Index />,
             loader: async (props) => {
+              const url = new URL(props.request.url)
+              const key = url.pathname + url.search
               await electricSqlLoader({
-                loaderProps: props,
+                key,
                 shapes: ({ db }) => shapes({ db }),
                 queries: ({ db }) => Index.queries({ db }),
               })
@@ -67,8 +75,10 @@ const router = createBrowserRouter([
             path: `/settings`,
             element: <Settings />,
             loader: async (props) => {
+              const url = new URL(props.request.url)
+              const key = url.pathname + url.search
               await electricSqlLoader({
-                loaderProps: props,
+                key,
                 shapes: ({ db }) => shapes({ db }),
                 queries: ({ db }) => Settings.queries({ db }),
               })
@@ -80,8 +90,10 @@ const router = createBrowserRouter([
             path: `/type/:id`,
             element: <Type />,
             loader: async (props) => {
+              const url = new URL(props.request.url)
+              const key = url.pathname + url.search
               await electricSqlLoader({
-                loaderProps: props,
+                key,
                 shapes: ({ db }) => shapes({ db }),
                 queries: ({ db }) => Type.queries({ db, props }),
               })

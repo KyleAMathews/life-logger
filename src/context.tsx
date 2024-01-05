@@ -1,11 +1,16 @@
 import { useState, useEffect } from "react"
 import { makeElectricContext } from "electric-sql/react"
 import { Electric } from "../src/generated/client"
-import initElectric from "./init-electric"
 import { useAuth } from "@clerk/clerk-react"
-import { electricRef } from "./init-electric"
+import { initElectric, electricRef } from "./electric-routes-lib"
 
 export const { ElectricProvider, useElectric } = makeElectricContext<Electric>()
+
+declare const ELECTRIC_URL: string
+const electricUrl =
+  typeof ELECTRIC_URL === `undefined`
+    ? `ws://localhost:5133`
+    : `wss://${ELECTRIC_URL}`
 
 export function ElectricalProvider({ children }) {
   const { getToken, isLoaded, isSignedIn } = useAuth()
@@ -17,7 +22,15 @@ export function ElectricalProvider({ children }) {
       const token = await getToken()
       if (token) {
         setTimeout(async () => {
-          const electric = await initElectric(token)
+          const config = {
+            appName: `life-logger`,
+            auth: {
+              token,
+            },
+            debug: false,
+            url: electricUrl,
+          }
+          const electric = await initElectric(config)
           setDb(electric)
         }, 1000)
       }

@@ -12,19 +12,18 @@ export default function RootLayout() {
 
   useEffect(() => {
     if (electric?.db && user && user.id) {
-      electric.db.users.upsert({
-        create: {
-          id: user.id,
-          name: user.firstName,
-          avatar_url: user.imageUrl,
-        },
-        update: {
-          id: user.id,
-          name: user.firstName,
-          avatar_url: user.imageUrl,
-        },
-        where: { id: user.id },
-      })
+      // electric.db.users.upsert({
+      // create: {
+      // id: user.id,
+      // name: user.firstName,
+      // avatar_url: user.imageUrl,
+      // },
+      // update: {
+      // name: user.firstName,
+      // avatar_url: user.imageUrl,
+      // },
+      // where: { id: user.id },
+      // })
     }
   }, [electric, user])
 
@@ -35,7 +34,7 @@ export default function RootLayout() {
       style={{ maxWidth: `960px`, margin: `0 auto` }}
     >
       <Box>
-        <Stack space="6">
+        <Box marginBottom="2">
           <Stack direction="horizontal" justify="space-between">
             <Stack direction="horizontal" align="center">
               <Text>
@@ -56,7 +55,7 @@ export default function RootLayout() {
           <SignedOut>
             <Link to="/sign-in">Sign In</Link>
           </SignedOut>
-        </Stack>
+        </Box>
       </Box>
       <main>
         <Outlet />

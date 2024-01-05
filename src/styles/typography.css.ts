@@ -34,7 +34,7 @@ export const fonts: Fonts = {
       "700": 700,
     },
   },
-  inter: {
+  Inter: {
     fallback: `sans-serif`,
     format: `truetype-variations`,
     metrics: interFontMetrics,
@@ -54,7 +54,7 @@ const typeScale = {
   s: 12,
   m: 14,
   l: 18,
-  xl: 24,
+  xl: 28,
 }
 
 interface Props {
@@ -81,6 +81,7 @@ type StyleId =
   | `SpaceMono_MED`
   | `SpaceMono_LARGE`
   | `SpaceMono_XLARGE`
+  | `Inter_XLARGE`
 
 export const fontStyles: Record<StyleId, string> = {
   SpaceMono_SMALL: calcFontCss({
@@ -92,6 +93,16 @@ export const fontStyles: Record<StyleId, string> = {
     id: `SpaceMono`,
     leading: 21,
     size: typeScale.m,
+  }),
+  Inter_MED: calcFontCss({
+    id: `Inter`,
+    leading: 21,
+    size: typeScale.m,
+  }),
+  Inter_XLARGE: calcFontCss({
+    id: `Inter`,
+    leading: 32,
+    size: typeScale.xl,
   }),
   SpaceMono_LARGE: calcFontCss({
     id: `SpaceMono`,

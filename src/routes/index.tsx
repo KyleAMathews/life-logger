@@ -5,12 +5,14 @@ import { useElectricData } from "../electric-routes-lib"
 import { eventTypes } from "../daos/event-types"
 import { events, useCreateEvent } from "../daos/events"
 import { Electric } from "../generated/client"
-import { useNavigate } from "react-router-dom"
+import { useLocation } from "react-router-dom"
 import { useAuth } from "@clerk/clerk-react"
 
 function Index() {
   const createEvent = useCreateEvent()
-  const { events, eventTypes } = useElectricData()
+  const location = useLocation()
+  const key = location.pathname + location.search
+  const { events, eventTypes } = useElectricData(key)
 
   const typesMap = eventTypes.reduce((acc, obj) => {
     acc[obj.id] = obj
@@ -27,6 +29,7 @@ function Index() {
             }}
           >
             <Stack space="4">
+              <h2 className={fontStyles.Inter_XLARGE}>All Events</h2>
               <Box
                 style={{
                   display: location.pathname === `/` ? `block` : `none`,
@@ -44,7 +47,6 @@ function Index() {
                   }}
                 >
                   <Stack space="2">
-                    <Heading level="2">All Events</Heading>
                     <h3 className={fontStyles.SpaceMono_MED}>Create event</h3>
                     <select
                       name="typeId"

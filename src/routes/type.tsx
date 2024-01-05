@@ -1,5 +1,5 @@
 import * as React from "react"
-import { useParams } from "react-router-dom"
+import { useLocation } from "react-router-dom"
 import { groupBy } from "lodash"
 import { fontStyles } from "../styles/typography.css"
 import { Heading, Stack, Box } from "degen"
@@ -76,6 +76,20 @@ const Chart: React.FC = ({ data }) => {
     xField: `day`,
     yField: `count`,
     height: 200,
+    // tooltip: {
+    // // Customizing the tooltip style
+    // domStyles: {
+    // "g2-tooltip": {
+    // "fontFamily": `Inter`, // font family
+    // },
+    // "g2-tooltip-title": {
+    // "fontFamily": `Inter`, // font family
+    // },
+    // "g2-tooltip-item": {
+    // "fontFamily": `Inter`, // font family
+    // },
+    // },
+    // },
   }
 
   return (
@@ -87,7 +101,10 @@ const Chart: React.FC = ({ data }) => {
 }
 
 function Type() {
-  const { type, events } = useElectricData<typeof queries>()
+  const location = useLocation()
+  const { type, events, dailyMinAccmumulation } = useElectricData(
+    location.pathname + location.search
+  )
 
   const eventsGroupedByDay = groupBy(Object.values(events), (event) =>
     event.created_at.toLocaleDateString()
@@ -102,7 +119,7 @@ function Type() {
 
   return (
     <Stack>
-      <Heading level="2">{type.name}</Heading>
+      <h2 className={fontStyles.Inter_XLARGE}>{type.name}</h2>
       <Text>
         {events.length} events recorded.
         <br />

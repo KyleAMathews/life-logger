@@ -6,20 +6,20 @@ import { Electric, schema } from "./generated/client"
 type Listener<T> = (value: T) => void
 
 function createElectricRef<T>() {
-  let value: T | undefined
-  let listeners: Listener<T>[] = []
+  let value: T | boolean | undefined
+  let listeners: Listener<T | boolean>[] = []
 
   return {
-    get value(): T | undefined {
+    get value(): T | boolean | undefined {
       return value
     },
-    set value(newValue: T | undefined) {
+    set value(newValue: T | boolean | undefined) {
       value = newValue
       if (newValue !== undefined) {
         listeners.forEach((listener) => listener(newValue))
       }
     },
-    subscribe(listener: Listener<T>) {
+    subscribe(listener: Listener<T | boolean>) {
       listeners.push(listener)
       return () => {
         listeners = listeners.filter((l) => l !== listener)
@@ -30,23 +30,9 @@ function createElectricRef<T>() {
 
 export const electricRef = createElectricRef<Electric>()
 
-declare const ELECTRIC_URL: string
-const electricUrl =
-  typeof ELECTRIC_URL === `undefined`
-    ? `ws://localhost:5133`
-    : `wss://${ELECTRIC_URL}`
-
-export async function initElectric(token: string) {
-  const config = {
-    auth: {
-      token,
-    },
-    debug: false,
-    url: electricUrl,
-  }
-
-  const tabId = tabCoordinator.tabId
-  const tabScopedDbName = `electric-${tabId}.db`
+export async function initElectric(config: any) {
+  const tabId = tabIdCoordinator.tabId
+  const tabScopedDbName = `${config.appName}-${tabId}.db`
   console.log({ tabScopedDbName })
 
   const conn = await ElectricDatabase.init(tabScopedDbName, sqliteWasm)
@@ -56,7 +42,7 @@ export async function initElectric(token: string) {
   return electric
 }
 
-class TabCoordinator {
+class TabIdCoordinator {
   heartbeatInterval: number
   inactivityThreshold: number
   tabIDsKey: string
@@ -77,8 +63,6 @@ class TabCoordinator {
     this.updateHeartbeat()
     setInterval(() => this.updateHeartbeat(), this.heartbeatInterval)
   }
-
-  init() {}
 
   generateUUID() {
     return Date.now().toString(36) + Math.random().toString(36).substr(2)
@@ -129,8 +113,8 @@ class TabCoordinator {
 
       // Check if the data in localStorage has changed
       if (this.isDifferent(newTabIDs, currentTabIDs)) {
-        this.cleanup(newTabIDs)
-        this.assignID()
+        this.cleanup()
+        this.assignTabId()
       }
     }
   }
@@ -177,7 +161,7 @@ class TabCoordinator {
 }
 
 // Initialize the library
-const tabCoordinator = new TabCoordinator()
+const tabIdCoordinator = new TabIdCoordinator()
 
 type ShapeFunction = (params: { db: Electric[`db`] }) => Array<{
   shape: (params: { db: Electric[`db`] }) => Promise<any>
@@ -213,16 +197,22 @@ export async function electricSqlLoader({
     }
   })
 
-  if (typeof electricRef.value === `undefined`) {
-    throw new Error(`electricRef.value is somehow still undefined`)
+  function isElectric(value: any): value is Electric {
+    return value && typeof value === `object` && `db` in value // Adjust the condition based on the actual properties of Electric
   }
 
-  // We're not signed in
-  if (electricRef.value === false) {
-    return
+  if (!isElectric(electricRef.value)) {
+    if (typeof electricRef.value === `boolean`) {
+      return
+    } else {
+      console.log(electricRef.value)
+      throw new Error(`electricRef.value is not an instance of Electric`)
+    }
   }
 
-  const resolvedShapes = shapes({ db: electricRef.value.db })
+  const { db } = electricRef.value
+
+  const resolvedShapes = shapes({ db })
 
   async function syncTables() {
     const syncPromises = await Promise.all(
@@ -232,7 +222,7 @@ export async function electricSqlLoader({
   }
 
   const isReadies = await Promise.all(
-    resolvedShapes.map((shape) => shape.isReady({ db: electricRef.value.db }))
+    resolvedShapes.map((shape) => shape.isReady({ db }))
   )
 
   // Check if all isReadies are true
@@ -243,7 +233,7 @@ export async function electricSqlLoader({
     await syncTables()
   }
 
-  const setupQueries = queries({ db: electricRef.value.db })
+  const setupQueries = queries({ db })
   queriesMap.set(key, setupQueries)
 
   // Run queries
@@ -289,6 +279,7 @@ export function useElectricData(key) {
     const query = queriesMapResult[key]
     let resultsReal
     if (typeof query === `function`) {
+      // We're living dangerously.
       // eslint-disable-next-line
       const { results } = useLiveQuery(query)
       resultsReal = results
