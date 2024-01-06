@@ -164,8 +164,8 @@ class TabIdCoordinator {
 const tabIdCoordinator = new TabIdCoordinator()
 
 type ShapeFunction = (params: { db: Electric[`db`] }) => Array<{
-  shape: (params: { db: Electric[`db`] }) => Promise<any>
-  isReady: (params: { db: Electric[`db`] }) => Promise<boolean>
+  shape: Promise<any>
+  isReady: () => Promise<boolean>
 }>
 
 type QueryFunction = () => Promise<any>

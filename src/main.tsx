@@ -30,7 +30,7 @@ const shapes = ({ db }) => [
         users: true,
       },
     }),
-    isReady: async ({ db }) => !!(await db.event_types.findFirst()),
+    isReady: async () => !!(await db.event_types.findFirst()),
   },
   {
     shape: db.events.sync({
@@ -39,7 +39,7 @@ const shapes = ({ db }) => [
         event_types: true,
       },
     }),
-    isReady: async ({ db }) => !!(await db.events.findFirst()),
+    isReady: async () => !!(await db.events.findFirst()),
   },
 ]
 
