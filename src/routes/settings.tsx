@@ -3,7 +3,7 @@ import { Link } from "react-router-dom"
 import { fontStyles } from "../styles/typography.css"
 import { Heading, Box, Stack } from "degen"
 import { timeSince } from "../time-since"
-import { useElectricData } from "../electric-routes-lib"
+import { useElectricData } from "electric-query"
 import { useLocation } from "react-router-dom"
 import {
   eventTypesWithEventCount,

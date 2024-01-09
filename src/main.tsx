@@ -8,8 +8,9 @@ import ErrorPage from "./error-page"
 import { ElectricalProvider } from "./context"
 import "@fontsource/space-mono"
 import { ClerkProvider } from "@clerk/clerk-react"
+import { Electric } from "../src/generated/client"
 
-import { electricSqlLoader } from "./electric-routes-lib"
+import { electricSqlLoader } from "electric-query"
 
 // Layouts
 import RootLayout from "./layouts/root-layout"
@@ -62,7 +63,7 @@ const router = createBrowserRouter([
             loader: async (props) => {
               const url = new URL(props.request.url)
               const key = url.pathname + url.search
-              await electricSqlLoader({
+              await electricSqlLoader<Electric>({
                 key,
                 shapes: ({ db }) => shapes({ db }),
                 queries: ({ db }) => Index.queries({ db }),
@@ -77,7 +78,7 @@ const router = createBrowserRouter([
             loader: async (props) => {
               const url = new URL(props.request.url)
               const key = url.pathname + url.search
-              await electricSqlLoader({
+              await electricSqlLoader<Electric>({
                 key,
                 shapes: ({ db }) => shapes({ db }),
                 queries: ({ db }) => Settings.queries({ db }),
@@ -92,7 +93,7 @@ const router = createBrowserRouter([
             loader: async (props) => {
               const url = new URL(props.request.url)
               const key = url.pathname + url.search
-              await electricSqlLoader({
+              await electricSqlLoader<Electric>({
                 key,
                 shapes: ({ db }) => shapes({ db }),
                 queries: ({ db }) => Type.queries({ db, props }),

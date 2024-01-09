@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react"
 import { makeElectricContext } from "electric-sql/react"
-import { Electric } from "../src/generated/client"
+import { Electric, schema } from "../src/generated/client"
 import { useAuth } from "@clerk/clerk-react"
-import { initElectric, electricRef } from "./electric-routes-lib"
+import { initElectric, setLoggedOut } from "electric-query"
+import sqliteWasm from "wa-sqlite/dist/wa-sqlite-async.wasm?asset"
 
 export const { ElectricProvider, useElectric } = makeElectricContext<Electric>()
+console.log(`hi`)
 
 declare const ELECTRIC_URL: string
 const electricUrl =
@@ -24,11 +26,15 @@ export function ElectricalProvider({ children }) {
         setTimeout(async () => {
           const config = {
             appName: `life-logger`,
-            auth: {
-              token,
+            sqliteWasmPath: sqliteWasm,
+            schema,
+            config: {
+              auth: {
+                token,
+              },
+              debug: false,
+              url: electricUrl,
             },
-            debug: false,
-            url: electricUrl,
           }
           const electric = await initElectric(config)
           setDb(electric)
@@ -37,7 +43,7 @@ export function ElectricalProvider({ children }) {
     }
 
     if (isSignedIn === false) {
-      electricRef.value = false
+      setLoggedOut()
     }
     if (isSignedIn) {
       // call the function

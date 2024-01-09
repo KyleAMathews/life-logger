@@ -9,7 +9,8 @@ import { timeSince } from "../time-since"
 import { eventTypeById, useEventTypeById } from "../daos/event-types"
 import { eventsByType, useEventsByType } from "../daos/events"
 import { Line } from "@ant-design/charts"
-import { useElectricData } from "../electric-routes-lib"
+import { useElectricData } from "electric-query"
+import { Electric } from "../generated/client"
 
 // Helper function to add days to a date
 const addDays = (date, days) => {

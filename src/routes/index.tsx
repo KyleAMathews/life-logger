@@ -1,7 +1,7 @@
 import { Box, Heading, Stack } from "degen"
 import EventsByDay from "../components/events-by-day"
 import { fontStyles } from "../styles/typography.css"
-import { useElectricData } from "../electric-routes-lib"
+import { useElectricData } from "electric-query"
 import { eventTypes } from "../daos/event-types"
 import { events, useCreateEvent } from "../daos/events"
 import { Electric } from "../generated/client"
