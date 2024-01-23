@@ -1,0 +1,41 @@
+diff --git a/node_modules/electric-sql/dist/cli/migrations/migrate.js b/node_modules/electric-sql/dist/cli/migrations/migrate.js
+index f03bd7f..fe99a2f 100644
+--- a/node_modules/electric-sql/dist/cli/migrations/migrate.js
++++ b/node_modules/electric-sql/dist/cli/migrations/migrate.js
+@@ -9,7 +9,7 @@ import http from "node:http";
+ import https from "node:https";
+ import Module from "node:module";
+ import path from "path";
+-import { buildDatabaseURL, parsePgProxyPort } from '../utils.js';
++import { buildDatabaseURL, extractDatabaseURL, parsePgProxyPort } from '../utils.js';
+ import { buildMigrations, getMigrationNames } from './builder.js';
+ import { findAndReplaceInFile } from '../util/index.js';
+ import { getConfig } from '../config.js';
+@@ -25,9 +25,18 @@ const generatorPath = path.join(
+ const appRoot = path.resolve();
+ const defaultPollingInterval = 1e3;
+ async function generate(options) {
++  const proxyParts = extractDatabaseURL(options.config.PROXY)
+   const opts = {
+     exitOnError: true,
+-    ...options
++    ...options,
++    config: {
++      ...options.config,
++      DATABASE_URL: options.config.PROXY,
++      PG_PROXY_PORT: proxyParts.port.toString(),
++      PG_PROXY_PASSWORD: proxyParts.password,
++      PG_PROXY_HOST: proxyParts.host,
++      DATABASE_NAME: proxyParts.dbName
++    }
+   };
+   let config = opts.config;
+   if (opts.watch && opts.withMigrations) {
+@@ -37,6 +46,7 @@ async function generate(options) {
+     process.exit(1);
+   }
+   console.log("Generating Electric client...");
++  console.log({config})
+   try {
+     if (opts.withMigrations) {
+       console.log("Starting ElectricSQL and PostgreSQL containers...");

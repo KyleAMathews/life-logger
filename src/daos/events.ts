@@ -43,7 +43,9 @@ export function useDeleteEvent(id: string) {
     return db.events.delete({ where: { id } })
   }
 }
-export const events = (db) => db.events.liveMany({})
+export const events = (db) =>
+  db.events.liveMany({ orderBy: { created_at: `desc` } })
+
 export function useEvents() {
   const { db } = useElectric()!
 

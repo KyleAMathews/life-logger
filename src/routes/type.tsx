@@ -74,24 +74,11 @@ const Chart: React.FC = ({ data }) => {
 
   const props = {
     data,
-    xField: `day`,
+    xField: (d) => new Date(d.day),
     yField: `count`,
     height: 200,
-    // tooltip: {
-    // // Customizing the tooltip style
-    // domStyles: {
-    // "g2-tooltip": {
-    // "fontFamily": `Inter`, // font family
-    // },
-    // "g2-tooltip-title": {
-    // "fontFamily": `Inter`, // font family
-    // },
-    // "g2-tooltip-item": {
-    // "fontFamily": `Inter`, // font family
-    // },
-    // },
-    // },
   }
+  console.log({ props })
 
   return (
     <div style={{ height: 200 }}>
@@ -101,22 +88,44 @@ const Chart: React.FC = ({ data }) => {
   )
 }
 
+const queries = ({ db, props }: { db: Electric[`db`] }) => {
+  return {
+    type: eventTypeById({ db, typeId: props.params.id }),
+    events: eventsByType({ db, typeId: props.params.id }),
+    sevenDayCount: db.raw({
+      sql: `WITH RECURSIVE DateSeries AS (
+  SELECT date('now', '-6 months') AS day
+  UNION ALL
+  SELECT date(day, '+1 day')
+  FROM DateSeries
+  WHERE day < date('now')
+)
+SELECT 
+  ds.day,
+  COALESCE(
+    (
+      SELECT COUNT(*)
+      FROM events as e2
+      WHERE 
+        e2.type = '${props.params.id}' AND
+        e2.created_at BETWEEN DATE(ds.day, '-6 days') AND ds.day
+    ),
+    0
+  ) as count
+FROM DateSeries ds
+LEFT JOIN events ON DATE(events.created_at) = ds.day AND events.type = '${props.params.id}'
+WHERE ds.day >= date('now', '-6 months')
+GROUP BY ds.day;`,
+    }),
+  }
+}
+Type.queries = queries
+
 function Type() {
   const location = useLocation()
-  const { type, events, dailyMinAccmumulation } = useElectricData(
+  const { type, events, sevenDayCount } = useElectricData(
     location.pathname + location.search
   )
-
-  const eventsGroupedByDay = groupBy(Object.values(events), (event) =>
-    event.created_at.toLocaleDateString()
-  )
-  const data = Object.entries(eventsGroupedByDay)
-    .map(([date, events]) => {
-      return { day: date, count: events.length }
-    })
-    .sort((a, b) => (new Date(a) < new Date(b) ? 1 : -1))
-
-  const filledData = fillDates(data)
 
   return (
     <Stack>
@@ -127,18 +136,10 @@ function Type() {
         The last event happened{` `}
         {timeSince(events[0]?.created_at)}.
       </Text>
-      <Chart data={filledData} />
+      <Chart data={sevenDayCount} />
       <EventsByDay events={events} typesMap={{}} showEventName={false} />
     </Stack>
   )
 }
-
-const queries = ({ db, props }) => {
-  return {
-    type: eventTypeById({ db, typeId: props.params.id }),
-    events: eventsByType({ db, typeId: props.params.id }),
-  }
-}
-Type.queries = queries
 
 export default Type

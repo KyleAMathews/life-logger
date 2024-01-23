@@ -80,6 +80,19 @@ function Index() {
 const queries = ({ db }: { db: Electric[`db`] }) => {
   return {
     eventTypes: db.event_types.liveMany({ orderBy: { name: `asc` } }),
+    workoutMinsByDay: db.liveRaw({
+      sql: `SELECT 
+    strftime('%Y-W%W', created_at) AS week,
+    SUM(json_extract(attributes, '$.durationMins')) AS total_duration
+FROM 
+    events 
+WHERE 
+    type = (SELECT id FROM event_types WHERE name = 'FOO DOG')
+GROUP BY 
+    week
+ORDER BY 
+    week;`,
+    }),
     events: events(db),
   }
 }
