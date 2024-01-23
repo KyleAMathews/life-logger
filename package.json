@@ -21,7 +21,6 @@
     "@internationalized/date": "^3.5.1",
     "@mui/material": "^5.15.6",
     "@nivo/line": "^0.84.0",
-    "@prisma/client": "^5.8.1",
     "@types/react": "^18.2.48",
     "@types/react-dom": "^18.2.18",
     "@typescript-eslint/eslint-plugin": "^6.19.1",
@@ -91,8 +90,5 @@
     "db:psql": "node ./db/connect.cjs",
     "cleanup-example-code": "node scripts/cleanup-example-code.js",
     "dev": "cross-env NODE_ENV=development concurrently \"npx tsx watch src/backend/index.ts\" \"vite\""
-  },
-  "devDependencies": {
-    "prisma": "^5.8.1"
   }
 }
