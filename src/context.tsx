@@ -36,6 +36,7 @@ export function ElectricalProvider({ children }) {
             url: electricUrl,
           },
         }
+        console.log({ config })
         const electric = await initElectric(config)
         setDb(electric)
 
