@@ -60,23 +60,12 @@ const fillDates = (data) => {
 }
 
 const Chart: React.FC = ({ data }) => {
-  // const data = [
-  // { year: `1991`, value: 3 },
-  // { year: `1992`, value: 4 },
-  // { year: `1993`, value: 3.5 },
-  // { year: `1994`, value: 5 },
-  // { year: `1995`, value: 4.9 },
-  // { year: `1996`, value: 6 },
-  // { year: `1997`, value: 7 },
-  // { year: `1998`, value: 9 },
-  // { year: `1999`, value: 13 },
-  // ]
-
   const props = {
     data,
     xField: (d) => new Date(d.day),
     yField: `count`,
     height: 200,
+    title: `Trailing 7-day count`,
   }
   console.log({ props })
 
@@ -88,7 +77,13 @@ const Chart: React.FC = ({ data }) => {
   )
 }
 
-const queries = ({ db, props }: { db: Electric[`db`] }) => {
+const queries = ({
+  db,
+  props,
+  timezoneOffsetHours,
+}: {
+  db: Electric[`db`]
+}) => {
   return {
     type: eventTypeById({ db, typeId: props.params.id }),
     events: eventsByType({ db, typeId: props.params.id }),
@@ -108,14 +103,15 @@ SELECT
       FROM events as e2
       WHERE 
         e2.type = '${props.params.id}' AND
-        e2.created_at BETWEEN DATE(ds.day, '-6 days') AND ds.day
+        datetime(e2.created_at, '${timezoneOffsetHours}') BETWEEN datetime(DATE(ds.day, '-6 days'), '${timezoneOffsetHours}') AND datetime(ds.day, '${timezoneOffsetHours}')
     ),
     0
   ) as count
 FROM DateSeries ds
-LEFT JOIN events ON DATE(events.created_at) = ds.day AND events.type = '${props.params.id}'
+LEFT JOIN events ON DATE(datetime(events.created_at, '${timezoneOffsetHours}')) = ds.day AND events.type = '${props.params.id}'
 WHERE ds.day >= date('now', '-3 months')
-GROUP BY ds.day;`,
+GROUP BY ds.day;
+`,
     }),
   }
 }

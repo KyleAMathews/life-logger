@@ -22,6 +22,14 @@ import Settings from "./routes/settings"
 import SignIn from "./routes/sign-in"
 import Type from "./routes/type"
 
+function getBrowserTimezoneOffsetHours() {
+  const offsetInMinutes = new Date().getTimezoneOffset()
+  const offsetInHours = -offsetInMinutes / 60
+  const hours = Math.floor(Math.abs(offsetInHours))
+  const sign = offsetInHours >= 0 ? `+` : `-`
+  return `${sign}${hours} hours`
+}
+
 // Until there's support for fine-grained shapes, all the routes use the same
 // shapes atm.
 const shapes = ({ db }) => [
@@ -93,10 +101,12 @@ const router = createBrowserRouter([
             loader: async (props) => {
               const url = new URL(props.request.url)
               const key = url.pathname + url.search
+              const timezoneOffsetHours = getBrowserTimezoneOffsetHours()
               await electricSqlLoader<Electric>({
                 key,
                 shapes: ({ db }) => shapes({ db }),
-                queries: ({ db }) => Type.queries({ db, props }),
+                queries: ({ db }) =>
+                  Type.queries({ db, props, timezoneOffsetHours }),
               })
 
               return null
