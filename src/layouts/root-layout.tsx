@@ -3,6 +3,7 @@ import { Link, Outlet } from "react-router-dom"
 import { Box, Stack } from "degen"
 import { Text } from "../components/text"
 import { SignedIn, SignedOut, UserButton } from "@clerk/clerk-react"
+import { ConnectivityIcon } from "../components/connectivity-icon"
 
 export default function RootLayout() {
   return (
@@ -20,6 +21,7 @@ export default function RootLayout() {
                   Life Logger v{import.meta.env.VITE_COMMIT_COUNT}
                 </Link>
               </Text>
+              <ConnectivityIcon />
             </Stack>
             <Stack direction="horizontal" align="center">
               <Text>
