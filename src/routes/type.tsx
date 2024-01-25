@@ -94,11 +94,11 @@ const queries = ({ db, props }: { db: Electric[`db`] }) => {
     events: eventsByType({ db, typeId: props.params.id }),
     sevenDayCount: db.raw({
       sql: `WITH RECURSIVE DateSeries AS (
-  SELECT date('now', '-6 months') AS day
+  SELECT date('now', '-3 months') AS day
   UNION ALL
   SELECT date(day, '+1 day')
   FROM DateSeries
-  WHERE day < date('now')
+  WHERE day <= date('now')
 )
 SELECT 
   ds.day,
@@ -114,7 +114,7 @@ SELECT
   ) as count
 FROM DateSeries ds
 LEFT JOIN events ON DATE(events.created_at) = ds.day AND events.type = '${props.params.id}'
-WHERE ds.day >= date('now', '-6 months')
+WHERE ds.day >= date('now', '-3 months')
 GROUP BY ds.day;`,
     }),
   }
