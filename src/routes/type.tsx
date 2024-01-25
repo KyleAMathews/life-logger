@@ -12,62 +12,18 @@ import { Line } from "@ant-design/charts"
 import { useElectricData } from "electric-query"
 import { Electric } from "../generated/client"
 
-// Helper function to add days to a date
-const addDays = (date, days) => {
-  const result = new Date(date)
-  result.setDate(result.getDate() + days)
-  return result
-}
-
-const daysAgo = (date) => Math.ceil((new Date() - date) / (1000 * 3600 * 24))
-
-// Function to get the array with filled dates
-const fillDates = (data) => {
-  if (data.length === 0) return []
-
-  // Convert the string dates to Date objects and sort them
-  const dates = data
-    .map((entry) => {
-      return new Date(entry.day)
-    })
-    .sort((a, b) => a - b)
-
-  // Get the start and end dates
-  let startDate = dates[0]
-  if (daysAgo(startDate) < 30) {
-    startDate = new Date()
-    startDate.setDate(startDate.getDate() - 30)
-  }
-  const endDate = new Date()
-
-  // Create a map with all dates set to 0
-  const dateMap = new Map()
-  for (
-    let date = new Date(startDate);
-    date <= endDate;
-    date = addDays(date, 1)
-  ) {
-    dateMap.set(date.toLocaleDateString(), 0)
-  }
-
-  // Update the map with the existing data
-  data.forEach(({ day, count }) => {
-    dateMap.set(day, count)
-  })
-
-  // Convert the map back to an array
-  return Array.from(dateMap, ([day, count]) => ({ day, count }))
-}
-
 const Chart: React.FC = ({ data }) => {
   const props = {
     data,
-    xField: (d) => new Date(d.day),
+    xField: (d) => {
+      const dateParts = d.day.split(`-`)
+      const date = new Date(dateParts[0], dateParts[1] - 1, dateParts[2])
+      return date
+    },
     yField: `count`,
     height: 200,
     title: `Trailing 7-day count`,
   }
-  console.log({ props })
 
   return (
     <div style={{ height: 200 }}>
@@ -93,7 +49,7 @@ const queries = ({
   UNION ALL
   SELECT date(day, '+1 day')
   FROM DateSeries
-  WHERE day <= date('now')
+  WHERE day < date('now')
 )
 SELECT 
   ds.day,
@@ -103,7 +59,7 @@ SELECT
       FROM events as e2
       WHERE 
         e2.type = '${props.params.id}' AND
-        datetime(e2.created_at, '${timezoneOffsetHours}') BETWEEN datetime(DATE(ds.day, '-6 days'), '${timezoneOffsetHours}') AND datetime(ds.day, '${timezoneOffsetHours}')
+        datetime(e2.created_at, '${timezoneOffsetHours}') BETWEEN datetime(DATE(ds.day, '-6 days'), '${timezoneOffsetHours}') AND datetime(DATE(ds.day, '+1 day'), '${timezoneOffsetHours}')
     ),
     0
   ) as count
