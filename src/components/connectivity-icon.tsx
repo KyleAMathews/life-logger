@@ -1,8 +1,8 @@
 import { useConnectivityState } from "electric-sql/react"
 
 export const ConnectivityIcon = () => {
-  const { connectivityState } = useConnectivityState()
-  const connected = connectivityState === `connected`
+  const { status } = useConnectivityState()
+  const connected = status === `connected`
   const iconStyle = {
     width: `15px`,
     height: `15px`,
