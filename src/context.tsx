@@ -28,10 +28,10 @@ export function ElectricalProvider({ children }) {
           appName: `life-logger`,
           sqliteWasmPath: sqliteWasm,
           schema,
+          getToken,
+          token,
           config: {
-            auth: {
-              token,
-            },
+            auth: {},
             debug: false,
             url: electricUrl,
           },
